@@ -1,11 +1,11 @@
 ---
-title: "Test statistical assignment"
-author: "Alexey Bessudnov"
-date: "22 January 2020"
+  title: "Test statistical assignment"
+author: "Nina Cunningham"
+date: "28 January 2020"
 output: github_document
 ---
-
-```{r setup, include=FALSE}
+  
+  ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -16,8 +16,8 @@ Please change the author and date fields above as appropriate. Do not change the
 ## Reading data (40 points)
 
 First, we need to read the data into R. For this assignment, I ask you to use data from the youth self-completion questionnaire (completed by children between 10 and 15 years old) from Wave 9 of the Understanding Society. It is one of the files you have downloaded as part of SN6614 from the UK Data Service. To help you find and understand this file you will need the following documents:
-
-1) The Understanding Society Waves 1-9 User Guide: https://www.understandingsociety.ac.uk/sites/default/files/downloads/documentation/mainstage/user-guides/mainstage-user-guide.pdf
+  
+  1) The Understanding Society Waves 1-9 User Guide: https://www.understandingsociety.ac.uk/sites/default/files/downloads/documentation/mainstage/user-guides/mainstage-user-guide.pdf
 2) The youth self-completion questionnaire from Wave 9: https://www.understandingsociety.ac.uk/sites/default/files/downloads/documentation/mainstage/questionnaire/wave-9/w9-gb-youth-self-completion-questionnaire.pdf
 3) The codebook for the file: https://www.understandingsociety.ac.uk/documentation/mainstage/dataset-documentation/datafile/youth/wave/9
 
@@ -25,7 +25,7 @@ First, we need to read the data into R. For this assignment, I ask you to use da
 ```{r}
 library(tidyverse)
 # This attaches the tidyverse package. If you get an error here you need to install the package first. 
-Data <- read_tsv("")
+data <- read_tsv("C:/Users/ninaj/Documents/datan3/datan3-master/UKDA-6614-tab/tab/ukhls_w9/i_youth.tab")
 # You need to add between the quotation marks a full path to the required file on your computer.
 ```
 
@@ -36,8 +36,7 @@ In the survey children were asked the following question: "Do you have a social 
 Tabulate three variables: children's gender, age (please use derived variables) and having an account on social media.
 
 ```{r}
-# add your code here
-
+table(data$i_sex_dv, data$i_age_dv, data$i_ypsocweb)
 ```
 
 ## Recode variables (10 points)
@@ -45,7 +44,14 @@ Tabulate three variables: children's gender, age (please use derived variables) 
 We want to create a new binary variable for having an account on social media so that 1 means "yes", 0 means "no", and all missing values are coded as NA. We also want to recode gender into a new variable with the values "male" and "female" (this can be a character vector or a factor).
 
 ```{r}
-# add your code here
+data$social <- data$i_ypsocweb
+data$social[data$social==-9] <- NA
+data$social[data$social==2] <- 0
+
+data$sex <- data$i_sex_dv
+data$sex[data$sex==0] <- NA
+data$sex[data$sex==1] <- "male"
+data$sex[data$sex==2] <- "female"
 ```
 
 ## Calculate means (10 points)
@@ -53,20 +59,32 @@ We want to create a new binary variable for having an account on social media so
 Produce code that calculates probabilities of having an account on social media (i.e. the mean of your new binary variable produced in the previous problem) by age and gender. 
 
 ```{r}
-# add your code here
+tapply(data$social, data$i_age_dv, mean, na.rm = TRUE)
+tapply(data$social, data$sex, mean, na.rm = TRUE)
+
+prop.table(table(data$age[social media ]))
+
 ```
 
 ## Write short interpretation (10 points)
+The probability of having a social media account increases with age going from no one 
+at aged nine to everyone at aged sixteen. There is a larger increase from ages nine to 
+aged twelve where the increase slows down with the rest of the ages being in the 90% to
+100% are. The divide between sexes also is present with girls more likely to have social
+media accounts (84%) compared to boys (78%).
 
 Write two or three sentences interpreting your findings above.
 
 ## Visualise results (20 points)
 
 Create a statistical graph (only one, but it can be faceted) illustrating your results (i.e. showing how the probability of having an account on social media changes with age and gender). Which type of statistical graph would be most appropriate for this?
+  
+  ```{r}
 
-```{r}
-# add your code here
-```
+ggplot(data,aes(x=i_age_dv, y=social)) + 
+    stat_summary(fun.y=mean, geom="bar") + facet_grid(~sex)
+
+ ```
 
 ## Conclusion
 
